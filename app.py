@@ -72,7 +72,7 @@ def plot_efficient_frontier_and_max_sharpe(rf_rate_str, mu, S):
     ax.scatter(stds, rets, marker=".", c=sharpes, cmap="viridis_r")
 
     # Output
-    ax.set_title("Efficient Frontier with Random Portfolios")
+    ax.set_title("Frontière efficiente avec des Portefeuilles aléatoires")
     ax.legend()
     return fig
 
@@ -99,14 +99,14 @@ def output_results(rf_rate_str, start_date, end_date, tickers_string, ind_ticker
     indice_df.index = indice_df.index.strftime('%Y-%m-%d')
     
     # Plot Individual Stock Prices
-    fig_indiv_prices = px.line(stocks_df, title='Price of Individual Stocks')
+    fig_indiv_prices = px.line(stocks_df, title='Prix des Actions individuelles')
         
     # Plot Individual Cumulative Returns
-    fig_cum_returns = plot_cum_returns(stocks_df, 'Cumulative Returns of Individual Stocks Starting with $100')
+    fig_cum_returns = plot_cum_returns(stocks_df, "Rendements cumulés des actions individuelles en partant de 100 euros")
     
     # Calculate and Plot Correlation Matrix between Stocks
     corr_df = stocks_df.corr().round(2)
-    fig_corr = px.imshow(corr_df, text_auto=True, title = 'Correlation between Stocks')
+    fig_corr = px.imshow(corr_df, text_auto=True, title = 'Corrélation entre les Actions')
 
     # Calculate expected returns and sample covariance matrix for portfolio optimization later
     mu = expected_returns.mean_historical_return(stocks_df)
@@ -128,7 +128,7 @@ def output_results(rf_rate_str, start_date, end_date, tickers_string, ind_ticker
     
     weights_df = pd.DataFrame.from_dict(weights, orient = 'index')
     weights_df = weights_df.reset_index()
-    weights_df.columns = ['Tickers', 'Weights']
+    weights_df.columns = ['Tickers', 'Poids']
 
     # Calculate returns of portfolio with optimized weights
     stocks_df['Optimized Portfolio'] = 0
@@ -145,7 +145,7 @@ def output_results(rf_rate_str, start_date, end_date, tickers_string, ind_ticker
         })
     
     # Plot Cumulative Returns of Optimized Portfolio
-    fig_cum_returns_optimized = plot_cum_returns(data_df, 'Cumulative Returns of Optimized Portfolio Starting with $100')
+    fig_cum_returns_optimized = plot_cum_returns(data_df, "Rendements cumulés d'un portefeuille optimisé en partant de 100 euros")
     #fig_cum_returns_optimized = plot_cum_returns(stocks_df['Optimized Portfolio'], 'Cumulative Returns of Optimized Portfolio Starting with $100')
 
     return  fig_cum_returns_optimized, weights_df, fig_efficient_frontier, fig_corr,   \
@@ -154,40 +154,40 @@ def output_results(rf_rate_str, start_date, end_date, tickers_string, ind_ticker
 # User interface with Gradio
 with gr.Blocks() as app:
     with gr.Row():
-        gr.HTML("<h1>Python & Gradio Stock Portfolio Optimizer</h1>")
+        gr.HTML("<h1>Application d'optimisation de portefeuille d'actions avec PyPortfolioOpt & Gradio</h1>")
     
     with gr.Row():
-        start_date = gr.Textbox(start_date, label="Start Date")
-        end_date = gr.Textbox(end_date, label="End Date")
+        start_date = gr.Textbox(start_date, label="Date début")
+        end_date = gr.Textbox(end_date, label="Date finale")
     
     with gr.Row(): 
-        rf_rate_str = gr.Textbox(rf_rate_def, label="Risk free rate")
+        rf_rate_str = gr.Textbox(rf_rate_def, label="Taux d'intérêt sans risque")
         
     with gr.Row():        
         tickers_string = gr.Textbox(tickers_def, 
-                                    label='Enter all stock tickers to be included in portfolio separated \
-                                    by commas WITHOUT spaces, e.g. "META,AMZN,AAPL,TSLA"')
-        ind_ticker_string = gr.Textbox(ind_ticker_def, label='Enter Reference Market Indice ticker \
-                                       e.g. for CAC40 enter "^FCHI"')
-        btn = gr.Button("Get Optimized Portfolio")
+                                    label='Entrer tous les tickers (Yahoo Finance) à inclure dans le portefeuille séparés par\
+                                    des virgules SANS espaces, ex. "META,AMZN,AAPL,TSLA"')
+        ind_ticker_string = gr.Textbox(ind_ticker_def, label="Entrer le ticker de l'indice de référence \
+                                       ex. pour CAC40 entrer '^FCHI'")
+        btn = gr.Button("Obtenir le portefeuille optimisé")
         
     # Outputs
     with gr.Row():
-        expected_annual_return = gr.Text(label="Expected Annual Return")
-        annual_volatility = gr.Text(label="Annual Volatility")
+        expected_annual_return = gr.Text(label="Rendement annuel attendu")
+        annual_volatility = gr.Text(label="Volatilité annuelle")
         sharpe_ratio = gr.Text(label="Sharpe Ratio")            
    
     with gr.Row():        
-        fig_cum_returns_optimized = gr.Plot(label="Cumulative Returns of Optimized Portfolio (Starting Price of 100 €)")
-        weights_df = gr.DataFrame(label="Optimized Weights of Each Ticker")
+        fig_cum_returns_optimized = gr.Plot(label="Rendements cumulés d'un portefeuille optimisé en partant de 100 euros")
+        weights_df = gr.DataFrame(label="Pondérations optimisées de chaque ticker")
         
     with gr.Row():
-        fig_efficient_frontier = gr.Plot(label="Efficient Frontier")
-        fig_corr = gr.Plot(label="Correlation between Stocks")
+        fig_efficient_frontier = gr.Plot(label="Frontière efficiente")
+        fig_corr = gr.Plot(label="Corrélation entre les Actions")
     
     with gr.Row():
-        fig_indiv_prices = gr.Plot(label="Price of Individual Stocks")
-        fig_cum_returns = gr.Plot(label="Cumulative Returns of Individual Stocks Starting with 100 €")    
+        fig_indiv_prices = gr.Plot(label="Prix des Actions individuelles")
+        fig_cum_returns = gr.Plot(label="Rendements cumulés des actions individuelles en partant de 100 euros")    
 
     # Action button
     btn.click(fn=output_results, inputs=[rf_rate_str, start_date, end_date, tickers_string, ind_ticker_string], 
