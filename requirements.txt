@@ -1,0 +1,5 @@
+pandas
+PyPortfolioOpt
+plotly
+matplotlib
+yfinance
