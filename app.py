@@ -140,8 +140,8 @@ def output_results(rf_rate_str, start_date, end_date, tickers_string, ind_ticker
     print('Dimension série indice: '+str(indice_df['Close'].shape))
     
     data_df = pd.DataFrame({
-        'Optimized Portfolio': stocks_df['Optimized Portfolio'],
-        'Ref Indice': indice_df['Close']
+        'Portefeuille optimisé': stocks_df['Optimized Portfolio'],
+        'Indice réf.': indice_df['Close']
         })
     
     # Plot Cumulative Returns of Optimized Portfolio
